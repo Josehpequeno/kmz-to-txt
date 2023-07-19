@@ -42,7 +42,7 @@ type KML struct {
 }
 
 func main() {
-	os.Chdir("./arquivos")
+	os.Chdir("./files")
 	cmd := exec.Command("pwd")
 	cmd.Stdin = strings.NewReader("")
 	var out bytes.Buffer
@@ -78,7 +78,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println("Conversão concluída com sucesso!")
+		fmt.Println("Conversion completed successfully!")
 	}
 
 	cmd = exec.Command("ls", "-ap")
@@ -128,7 +128,7 @@ func main() {
 
 	//cabeçalhos dos arquivos GTFS
 	agencyWriter.Write([]string{"agency_id", "agency_name", "agency_url", "agency_timezone", "agency_lang"})
-	agencyWriter.Write([]string{"1", "STRANS", "https://strans.pmt.pi.gov.br/", "America/Fortaleza", "pt"})
+	agencyWriter.Write([]string{"0","example","https://example.br/", "America/Fortaleza", "pt"})
 	agencyWriter.Flush()
 	routesWriter.Write([]string{"route_id", "agency_id", "route_name"})
 	stopsWriter.Write([]string{"stops_id", "stop_name", "stop_desc", "stop_lat", "stop_lon"})
@@ -225,15 +225,13 @@ func convertKMLToGTFS(kmlFile string, routesWriter *altcsv.Writer, stopsWriter *
 		return err
 	}
 
-	// fmt.Println(kml.PlacemarksFolder)
 	var array []Placemark
 	array = append(array, kml.Placemarks...)
 	array = append(array, kml.PlacemarksFolder...)
 	array = append(array, kml.PlacemarksDocument...)
-	// fmt.Println(array, kml.PlacemarksDocument)
+	
 
 	for _, placemark := range array {
-		// if placemark, ok := feature.(*kml.Placemark); ok {
 		routeID := placemark.Name
 		routeName := placemark.Name
 		if len(placemark.StopsData) > 0 {
@@ -244,7 +242,6 @@ func convertKMLToGTFS(kmlFile string, routesWriter *altcsv.Writer, stopsWriter *
 				stopLat := ""
 				stopLon := ""
 				for _, stop := range stopData.Stops {
-					// fmt.Println("=>", stop)
 					if stop.Name == "stop_id" {
 						stopID = stop.Value
 					}
@@ -266,8 +263,7 @@ func convertKMLToGTFS(kmlFile string, routesWriter *altcsv.Writer, stopsWriter *
 		}
 
 		routesWriter.Write([]string{routeID, "1", routeName})
-		// schedulesWriter.Write([]string{routeID, stopID, arrivalTime})
-		// }
+	
 	}
 
 	// finalizar escrita dos arquivos GTFS
